@@ -10,7 +10,7 @@ services:
     ports:
       - "${POSTGRES_CORE_PORT}:5432"
     volumes:
-      - postgres_core_data:/var/lib/postgresql/data
+      - postgres_core_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_CORE_DB}"]
       interval: 5s
@@ -30,7 +30,7 @@ services:
     ports:
       - "${POSTGRES_SEARCH_PORT}:5432"
     volumes:
-      - postgres_search_data:/var/lib/postgresql/data
+      - postgres_search_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_SEARCH_DB}"]
       interval: 5s
@@ -41,7 +41,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: dev_notes_rabbitmq
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
