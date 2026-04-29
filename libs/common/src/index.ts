@@ -1,2 +1,2 @@
 export * from './constants/note';
-export * from './dto/note-event.dto';
+export * from 'libs/common/src/dto/note-event-payload.dto';

@@ -2,29 +2,29 @@ import { RabbitEvents, SEARCH_SERVICE } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'node:crypto';
 import { CreateNoteDto } from 'apps/dev-notes/src/notes/dto/create-note.dto';
 import { Note } from 'apps/dev-notes/src/notes/entities/note.entity';
+import { ClsService } from 'nestjs-cls';
 import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class NotesService {
     constructor(
-        @InjectRepository(Note)
-        private readonly noteRepository: Repository<Note>,
-
-        @Inject(SEARCH_SERVICE)
-        private readonly client: ClientProxy,
+        @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
+        @Inject(SEARCH_SERVICE) private readonly client: ClientProxy,
+        private readonly cls: ClsService,
     ) {}
 
     async create(dto: CreateNoteDto): Promise<Note> {
         const note = this.noteRepository.create(dto);
         const createdNote = await this.noteRepository.save(note);
 
+        const currentTraceId = this.cls.get<string>('traceId') ?? randomUUID();
+
         this.client.emit(RabbitEvents.NOTE_CREATED, {
-            id: createdNote.id,
-            title: createdNote.title,
-            content: createdNote.content,
-            updatedAt: createdNote.updatedAt,
+            ...createdNote,
+            traceId: currentTraceId,
         });
 
         return createdNote;
