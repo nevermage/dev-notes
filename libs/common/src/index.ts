@@ -1,2 +1,2 @@
 export * from './constants/note';
-export * from './dto/note.dto';
+export * from './dto/note-event.dto';

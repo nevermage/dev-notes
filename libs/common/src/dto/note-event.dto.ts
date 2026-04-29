@@ -1,4 +1,4 @@
-export class NoteDto {
+export class NoteEventDto {
     id: number;
     title: string;
     content: string;
