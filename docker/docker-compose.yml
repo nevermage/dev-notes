@@ -1,3 +1,5 @@
+name: dev-notes
+
 services:
   postgres_core:
     image: postgres:18
@@ -8,7 +10,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_CORE_PORT}:5432"
+      - "5432:5432"
     volumes:
       - postgres_core_data:/var/lib/postgresql
     healthcheck:
@@ -17,7 +19,7 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - devnotes_net
+      - dev-notes-net
 
   postgres_search:
     image: pgvector/pgvector:pg18
@@ -28,7 +30,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_SEARCH_PORT}:5432"
+      - "5433:5432"
     volumes:
       - postgres_search_data:/var/lib/postgresql
     healthcheck:
@@ -37,18 +39,18 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - devnotes_net
+      - dev-notes-net
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: dev_notes_rabbitmq
+    container_name: dev-notes-rabbitmq
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
-      - "${RABBITMQ_PORT}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -57,7 +59,7 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - devnotes_net
+      - dev-notes-net
 
   core_service:
     image: node:20-alpine
@@ -72,16 +74,16 @@ services:
     command: >
       sh -c "npx nest start dev-notes --watch"
     volumes:
-      - .:/app
+      - ../:/app
     ports:
-      - "${CORE_SERVICE_PORT}:${CORE_SERVICE_PORT}"
+      - "3000:3000"
     depends_on:
       postgres_core:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     networks:
-      - devnotes_net
+      - dev-notes-net
 
   search_service:
     image: node:20-alpine
@@ -96,22 +98,61 @@ services:
     command: >
       sh -c "npx nest start search-service --watch"
     volumes:
-      - .:/app
+      - ../:/app
     ports:
-      - "${SEARCH_SERVICE_PORT}:${SEARCH_SERVICE_PORT}"
+      - "3001:3001"
     depends_on:
       postgres_search:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     networks:
-      - devnotes_net
+      - dev-notes-net
+
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: dev-notes-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yaml
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/config.yaml
+      - loki_data:/tmp/loki
+    user: "0:0"
+    networks:
+      - dev-notes-net
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: dev-notes-promtail
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    user: "0:0"
+    networks:
+      - dev-notes-net
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: dev-notes-grafana
+    ports:
+      - "3002:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - dev-notes-net
 
 volumes:
   postgres_core_data:
   postgres_search_data:
   rabbitmq_data:
+  loki_data:
+  grafana_data:
 
 networks:
-  devnotes_net:
-    name: devnotes_net
+  dev-notes-net:
+    name: dev-notes-net
