@@ -13,23 +13,18 @@ scrape_configs:
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
         refresh_interval: 5s
-        filters:
-          - name: label
-            values: ["logging=promtail"]
 
     pipeline_stages:
       - docker: {}
       - json:
           expressions:
             level: level
-            message: message
-            stack: stack
+            traceId: traceId
+            msg: msg
       - labels:
-          level: level
+          level:
 
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
         regex: '/(.*)'
         target_label: 'container'
-      - source_labels: ['__meta_docker_container_log_stream']
-        target_label: 'logstream'

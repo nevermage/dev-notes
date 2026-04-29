@@ -20,6 +20,12 @@ import { SearchController } from './search.controller';
                         const traceId = cls.get<string>('traceId');
                         return traceId ? { traceId } : {};
                     },
+
+                    formatters: {
+                        level: (label) => {
+                            return { level: label };
+                        },
+                    },
                 },
             }),
         }),

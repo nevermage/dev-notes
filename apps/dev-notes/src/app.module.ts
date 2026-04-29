@@ -31,6 +31,12 @@ import { NotesModule } from './notes/notes.module';
                         const traceId = cls.get<string>('traceId');
                         return traceId ? { traceId } : {};
                     },
+
+                    formatters: {
+                        level: (label) => {
+                            return { level: label };
+                        },
+                    },
                 },
             }),
         }),
