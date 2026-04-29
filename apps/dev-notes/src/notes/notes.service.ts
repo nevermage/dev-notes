@@ -2,6 +2,7 @@ import { RabbitEvents, SEARCH_SERVICE } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PinoLogger } from 'nestjs-pino';
 import { randomUUID } from 'node:crypto';
 import { CreateNoteDto } from 'apps/dev-notes/src/notes/dto/create-note.dto';
 import { Note } from 'apps/dev-notes/src/notes/entities/note.entity';
@@ -14,6 +15,7 @@ export class NotesService {
         @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
         @Inject(SEARCH_SERVICE) private readonly client: ClientProxy,
         private readonly cls: ClsService,
+        private readonly logger: PinoLogger,
     ) {}
 
     async create(dto: CreateNoteDto): Promise<Note> {
@@ -26,6 +28,10 @@ export class NotesService {
             ...createdNote,
             traceId: currentTraceId,
         });
+        this.logger.info(
+            { noteId: createdNote.id },
+            `Passed note to sync: ${createdNote.title}`,
+        );
 
         return createdNote;
     }
