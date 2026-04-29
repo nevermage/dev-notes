@@ -82,6 +82,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    labels:
+      - logging=promtail
     networks:
       - dev-notes-net
 
@@ -106,6 +108,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    labels:
+      - logging=promtail
     networks:
       - dev-notes-net
 
@@ -140,6 +144,7 @@ services:
     ports:
       - "3002:3000"
     volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin

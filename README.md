@@ -50,3 +50,14 @@ If you changed PostgreSQL major versions or got broken DB state:
 docker compose down -v
 docker compose up -d --build
 ```
+
+### 8. Where to see logs
+
+- Open Grafana: `http://localhost:3002`
+- Go to `Explore`
+- Select datasource: `Loki`
+- Use query:
+
+```logql
+{container=~"core_service|search_service"}
+```

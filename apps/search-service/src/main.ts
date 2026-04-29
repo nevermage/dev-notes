@@ -1,12 +1,14 @@
 import { QUEUES } from '@app/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { SearchModule } from 'apps/search-service/src/search/search.module';
+import { Logger } from 'nestjs-pino';
+import { SearchModule } from './search/search.module';
 
 async function bootstrap() {
     const app = await NestFactory.createMicroservice<MicroserviceOptions>(
         SearchModule,
         {
+            bufferLogs: true,
             transport: Transport.RMQ,
             options: {
                 urls: [
@@ -21,7 +23,9 @@ async function bootstrap() {
         },
     );
 
+    app.useLogger(app.get(Logger));
+
     await app.listen();
-    console.log('Search Service is listening for messages...');
+    app.get(Logger).log('Search Service is listening for messages...');
 }
-bootstrap();
+void bootstrap();
