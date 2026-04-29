@@ -1,0 +1,347 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 3,
+    "links": [],
+    "panels": [
+        {
+            "datasource": {
+                "type": "loki",
+                "uid": "loki"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "filterable": true,
+                        "inspect": true
+                    },
+                    "links": [],
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "dark-red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "level"
+                        },
+                        "properties": [
+                            {
+                                "id": "mappings",
+                                "value": [
+                                    {
+                                        "options": {
+                                            "info": {
+                                                "color": "green",
+                                                "index": 0,
+                                                "text": "INFO"
+                                            }
+                                        },
+                                        "type": "value"
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "custom.cellOptions",
+                                "value": {
+                                    "type": "color-text"
+                                }
+                            },
+                            {
+                                "id": "custom.width",
+                                "value": 75
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "pid"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 66
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Time"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 193
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "traceId"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 172
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "container"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 143
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "msg"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 595
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "traceId"
+                        },
+                        "properties": [
+                            {
+                                "id": "links",
+                                "value": [
+                                    {
+                                        "title": "",
+                                        "url": "/d/${__dashboard.uid}/${__dashboard.slug}?${__url_time_range}&var-traceId=${__data.fields.traceId}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 20,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 1,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "enablePagination": false,
+                    "fields": "",
+                    "reducer": ["sum"],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "11.0.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "loki",
+                        "uid": "loki"
+                    },
+                    "editorMode": "code",
+                    "expr": "{container=~\"$container\"} |= \"$traceId\" | json",
+                    "queryType": "range",
+                    "refId": "A"
+                }
+            ],
+            "title": "Panel Title",
+            "transformations": [
+                {
+                    "id": "extractFields",
+                    "options": {
+                        "format": "json",
+                        "jsonPaths": [
+                            {
+                                "path": "container"
+                            }
+                        ],
+                        "keepTime": false,
+                        "replace": false,
+                        "source": "labels"
+                    }
+                },
+                {
+                    "id": "extractFields",
+                    "options": {
+                        "format": "json",
+                        "jsonPaths": [],
+                        "keepTime": false,
+                        "replace": false,
+                        "source": "Line"
+                    }
+                },
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "Line": true,
+                            "Time": false,
+                            "context": true,
+                            "hostname": true,
+                            "id": true,
+                            "labelTypes": true,
+                            "labels": true,
+                            "req": true,
+                            "res": true,
+                            "responseTime": true,
+                            "time": true,
+                            "tsNs": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {
+                            "Line": 4,
+                            "Time": 1,
+                            "container": 3,
+                            "context": 15,
+                            "hostname": 11,
+                            "id": 5,
+                            "labelTypes": 7,
+                            "labels": 0,
+                            "level": 8,
+                            "msg": 12,
+                            "noteId": 13,
+                            "pid": 10,
+                            "req": 14,
+                            "time": 9,
+                            "traceId": 2,
+                            "tsNs": 6
+                        },
+                        "renameByName": {}
+                    }
+                },
+                {
+                    "id": "sortBy",
+                    "options": {
+                        "fields": {},
+                        "sort": [
+                            {
+                                "desc": true,
+                                "field": "Time"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "type": "table"
+        }
+    ],
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": {
+                    "type": "loki",
+                    "uid": "loki"
+                },
+                "definition": "",
+                "hide": 0,
+                "includeAll": true,
+                "label": "Container",
+                "multi": false,
+                "name": "container",
+                "options": [],
+                "query": {
+                    "label": "container",
+                    "refId": "LokiVariableQueryEditor-VariableQuery",
+                    "stream": "",
+                    "type": 1
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "type": "query"
+            },
+            {
+                "current": {
+                    "selected": false,
+                    "text": "",
+                    "value": ""
+                },
+                "hide": 0,
+                "label": "Search by Trace Id",
+                "name": "traceId",
+                "options": [
+                    {
+                        "selected": true,
+                        "text": "",
+                        "value": ""
+                    }
+                ],
+                "query": "",
+                "skipUrlSync": false,
+                "type": "textbox"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-6h",
+        "to": "now"
+    },
+    "timeRangeUpdatedDuringEditOrView": false,
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Dev notes",
+    "uid": "ffkjjp355s1kwf",
+    "version": 21,
+    "weekStart": ""
+}
