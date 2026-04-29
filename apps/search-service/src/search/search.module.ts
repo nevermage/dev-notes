@@ -16,6 +16,7 @@ import { SearchController } from './search.controller';
             inject: [ClsService],
             useFactory: (cls: ClsService) => ({
                 pinoHttp: {
+                    autoLogging: false,
                     mixin: () => {
                         const traceId = cls.get<string>('traceId');
                         return traceId ? { traceId } : {};
