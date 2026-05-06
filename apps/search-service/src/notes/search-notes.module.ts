@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DatabaseModule } from 'apps/search-service/src/db/database.module';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { LoggerModule } from 'nestjs-pino';
 import { LoggingContextInterceptor } from './interceptors/logging-context.interceptor';
-import { SearchService } from './search.service';
-import { SearchController } from './search.controller';
+import { EmbeddingService } from 'apps/search-service/src/notes/embedding.service';
+import { SearchNotesController } from 'apps/search-service/src/notes/search-notes.controller';
+import { SearchNotesService } from 'apps/search-service/src/notes/search-notes.service';
 
 @Module({
     imports: [
+        DatabaseModule,
         ClsModule.forRoot({
             global: true,
         }),
@@ -32,12 +35,13 @@ import { SearchController } from './search.controller';
         }),
     ],
     providers: [
-        SearchService,
+        EmbeddingService,
         {
             provide: APP_INTERCEPTOR,
             useClass: LoggingContextInterceptor,
         },
+        SearchNotesService,
     ],
-    controllers: [SearchController],
+    controllers: [SearchNotesController],
 })
-export class SearchModule {}
+export class SearchNotesModule {}

@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SearchModule } from './search/search.module';
+import { DatabaseModule } from 'apps/search-service/src/db/database.module';
+import { SearchNotesModule } from 'apps/search-service/src/notes/search-notes.module';
 
 @Module({
-    imports: [SearchModule],
+    imports: [DatabaseModule, SearchNotesModule],
 })
 export class SearchServiceModule {}

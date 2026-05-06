@@ -88,7 +88,7 @@ services:
       - dev-notes-net
 
   search_service:
-    image: node:20-alpine
+    image: node:20
     container_name: search_service
     working_dir: /app
     restart: unless-stopped
