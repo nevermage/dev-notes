@@ -1,4 +1,9 @@
-import { NoteEventPayload, RabbitEvents } from '@app/common';
+import {
+    NoteCreatedPayloadDto,
+    NoteDeletedPayloadDto,
+    NoteUpdatedPayloadDto,
+    RabbitEvents,
+} from '@app/common';
 import { Controller, Get, Query } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { SearchNotesDto } from 'apps/search-service/src/notes/dto/search-notes.dto';
@@ -13,10 +18,42 @@ export class SearchNotesController {
     ) {}
 
     @EventPattern(RabbitEvents.NOTE_CREATED)
-    async handleNoteCreated(@Payload() data: NoteEventPayload) {
+    async handleNoteCreated(@Payload() data: NoteCreatedPayloadDto) {
         this.logger.info({ noteId: data.id }, `Received event: ${data.title}`);
 
-        await this.searchNotesService.indexNote(data.id, data.title, data.content);
+        await this.searchNotesService.indexNoteCreate(
+            data.id,
+            data.title,
+            data.content,
+        );
+
+        this.logger.info(
+            { noteId: data.id },
+            `Note successfully dispatched to index`,
+        );
+    }
+
+    @EventPattern(RabbitEvents.NOTE_UPDATED)
+    async handleNoteUpdated(@Payload() data: NoteUpdatedPayloadDto) {
+        this.logger.info({ noteId: data.id }, `Received event: ${data.title}`);
+
+        await this.searchNotesService.indexNoteUpdate(
+            data.id,
+            data.title,
+            data.content,
+        );
+
+        this.logger.info(
+            { noteId: data.id },
+            `Note successfully dispatched to index`,
+        );
+    }
+
+    @EventPattern(RabbitEvents.NOTE_DELETED)
+    async handleNoteDeleted(@Payload() data: NoteDeletedPayloadDto) {
+        this.logger.info({ noteId: data.id }, `Received event: delete`);
+
+        await this.searchNotesService.indexNoteDelete(data.id);
 
         this.logger.info(
             { noteId: data.id },

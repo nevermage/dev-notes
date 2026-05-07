@@ -1,2 +1,4 @@
 export * from './constants/note';
-export * from 'libs/common/src/dto/note-event-payload.dto';
+export * from '@app/common/dto/note-created-payload.dto';
+export * from '@app/common/dto/note-updated-payload.dto';
+export * from '@app/common/dto/note-deleted-payload.dto';

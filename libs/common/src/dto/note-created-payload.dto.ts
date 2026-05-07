@@ -1,7 +1,6 @@
-export class NoteEventPayload {
+export class NoteCreatedPayloadDto {
     id: string;
     title: string;
     content: string;
-    updatedAt: Date;
     traceId?: string;
 }
