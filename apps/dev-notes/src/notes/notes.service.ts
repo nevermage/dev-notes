@@ -4,10 +4,10 @@ import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PinoLogger } from 'nestjs-pino';
 import { randomUUID } from 'node:crypto';
-import { CreateNoteDto } from 'apps/dev-notes/src/notes/dto/create-note.dto';
+import { CreateUpdateNoteDto } from 'apps/dev-notes/src/notes/dto/create-update-note.dto';
 import { Note } from 'apps/dev-notes/src/notes/entities/note.entity';
 import { ClsService } from 'nestjs-cls';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class NotesService {
@@ -18,7 +18,7 @@ export class NotesService {
         private readonly logger: PinoLogger,
     ) {}
 
-    async create(dto: CreateNoteDto): Promise<Note> {
+    async create(dto: CreateUpdateNoteDto): Promise<Note> {
         const note = this.noteRepository.create(dto);
         const createdNote = await this.noteRepository.save(note);
 
@@ -42,6 +42,10 @@ export class NotesService {
 
     async findById(id: string): Promise<Note | null> {
         return await this.noteRepository.findOneBy({ id });
+    }
+
+    async update(id: string, dto: CreateUpdateNoteDto): Promise<UpdateResult> {
+        return await this.noteRepository.update({ id }, dto);
     }
 
     async delete(id: string): Promise<DeleteResult> {

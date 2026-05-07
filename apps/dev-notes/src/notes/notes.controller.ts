@@ -6,8 +6,9 @@ import {
     Param,
     ParseUUIDPipe,
     Post,
+    Put,
 } from '@nestjs/common';
-import { CreateNoteDto } from 'apps/dev-notes/src/notes/dto/create-note.dto';
+import { CreateUpdateNoteDto } from 'apps/dev-notes/src/notes/dto/create-update-note.dto';
 import { NotesService } from 'apps/dev-notes/src/notes/notes.service';
 
 @Controller('notes')
@@ -15,8 +16,8 @@ export class NotesController {
     constructor(private readonly notesService: NotesService) {}
 
     @Post('')
-    create(@Body() createDto: CreateNoteDto) {
-        return this.notesService.create(createDto);
+    create(@Body() dto: CreateUpdateNoteDto) {
+        return this.notesService.create(dto);
     }
 
     @Get()
@@ -27,6 +28,14 @@ export class NotesController {
     @Get(':id')
     getById(@Param('id', ParseUUIDPipe) id: string) {
         return this.notesService.findById(id);
+    }
+
+    @Put(':id')
+    update(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() dto: CreateUpdateNoteDto,
+    ) {
+        return this.notesService.update(id, dto);
     }
 
     @Delete(':id')
